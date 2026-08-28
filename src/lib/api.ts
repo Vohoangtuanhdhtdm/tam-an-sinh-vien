@@ -49,8 +49,15 @@ export interface PredictResponse {
 export interface ThresholdRow {
   capacity_pct: number;
   threshold: number;
+  n_invited: number;
+  n_true_positive: number;
   precision: number;
   recall: number;
+}
+
+export interface ThresholdsResponse {
+  table: ThresholdRow[];
+  default_threshold?: number;
 }
 
 export class ApiError extends Error {}
@@ -82,10 +89,15 @@ export const getSchema = () => request<SchemaResponse>("/schema");
 export const postPredict = (payload: Record<string, unknown>) =>
   request<PredictResponse>("/predict", { method: "POST", body: JSON.stringify(payload) });
 
-export const getThresholds = () =>
-  request<ThresholdRow[] | { thresholds: ThresholdRow[] }>("/thresholds").then((data) =>
-    Array.isArray(data) ? data : (data.thresholds ?? []),
-  );
+export const getThresholds = (): Promise<ThresholdRow[]> =>
+  request<ThresholdRow[] | ThresholdsResponse | { thresholds: ThresholdRow[] }>(
+    "/thresholds",
+  ).then((data) => {
+    if (Array.isArray(data)) return data;
+    if ("table" in data && Array.isArray(data.table)) return data.table;
+    if ("thresholds" in data && Array.isArray(data.thresholds)) return data.thresholds;
+    return [];
+  });
 
 export function normalizeOptions(field: SchemaField): SchemaOption[] {
   return (field.options ?? []).map((o) =>
