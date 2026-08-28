@@ -25,6 +25,7 @@ export const Route = createFileRoute("/quan-tri")({
 });
 
 const num = (n: number, d = 1) => n.toFixed(d).replace(".", ",");
+const int = (n: number) => Math.round(n).toLocaleString("vi-VN");
 
 function AdminPage() {
   const [rows, setRows] = useState<ThresholdRow[] | null>(null);
@@ -39,7 +40,7 @@ function AdminPage() {
       const data = await getThresholds();
       const sorted = [...data].sort((a, b) => a.capacity_pct - b.capacity_pct);
       setRows(sorted);
-      setIndex(Math.min(index, Math.max(sorted.length - 1, 0)));
+      setIndex((prev) => Math.min(prev, Math.max(sorted.length - 1, 0)));
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Đã có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
@@ -116,21 +117,24 @@ function AdminPage() {
             ) : null}
             {selected ? (
               <p className="mt-5 rounded-xl bg-accent p-4 text-sm leading-relaxed text-accent-foreground">
-                Với năng lực mời {num(selected.capacity_pct)}% sinh viên, khoảng{" "}
+                Với năng lực mời {num(selected.capacity_pct)}% sinh viên (khoảng{" "}
+                {int(selected.n_invited)} người), khoảng{" "}
                 {num(selected.precision * (selected.precision <= 1 ? 100 : 1))}% số người được mời
-                thực sự thuộc nhóm nguy cơ.
+                thực sự thuộc nhóm nguy cơ — phát hiện đúng {int(selected.n_true_positive)} ca.
               </p>
             ) : null}
           </div>
 
           <div className="card-surface overflow-x-auto p-2 sm:p-4">
-            <table className="w-full min-w-[480px] border-collapse text-sm">
+            <table className="w-full min-w-[640px] border-collapse text-sm">
               <thead>
                 <tr className="text-left text-xs text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Năng lực (%)</th>
-                  <th className="px-4 py-3 font-medium">Ngưỡng</th>
-                  <th className="px-4 py-3 font-medium">Độ chính xác</th>
-                  <th className="px-4 py-3 font-medium">Độ bao phủ</th>
+                  <th className="px-4 py-3 font-medium">Ngưỡng xác suất</th>
+                  <th className="px-4 py-3 font-medium">Số sinh viên được mời</th>
+                  <th className="px-4 py-3 font-medium">Số ca phát hiện đúng</th>
+                  <th className="px-4 py-3 font-medium">Precision</th>
+                  <th className="px-4 py-3 font-medium">Recall</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,11 +148,13 @@ function AdminPage() {
                   >
                     <td className="px-4 py-3 font-medium text-foreground">{num(r.capacity_pct)}</td>
                     <td className="px-4 py-3 text-foreground">{num(r.threshold, 3)}</td>
+                    <td className="px-4 py-3 text-foreground">{int(r.n_invited)}</td>
+                    <td className="px-4 py-3 text-foreground">{int(r.n_true_positive)}</td>
                     <td className="px-4 py-3 text-foreground">
-                      {num(r.precision * (r.precision <= 1 ? 100 : 1))}%
+                      {num(r.precision * (r.precision <= 1 ? 100 : 1), 2)}%
                     </td>
                     <td className="px-4 py-3 text-foreground">
-                      {num(r.recall * (r.recall <= 1 ? 100 : 1))}%
+                      {num(r.recall * (r.recall <= 1 ? 100 : 1), 2)}%
                     </td>
                   </tr>
                 ))}
