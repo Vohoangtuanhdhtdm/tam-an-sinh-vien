@@ -124,6 +124,22 @@ export function ResultView({
           <p className="mt-6 text-lg font-semibold text-foreground">
             Mức nguy cơ: <span style={{ color }}>{result.risk_label}</span>
           </p>
+
+          {result.pss10_total != null || result.gad7_total != null ? (
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {result.pss10_total != null ? (
+                <span className="rounded-xl border border-border bg-secondary/60 px-3.5 py-2 text-xs font-medium text-foreground">
+                  Điểm căng thẳng PSS-10: {fmtPercent(result.pss10_total)}/40
+                </span>
+              ) : null}
+              {result.gad7_total != null ? (
+                <span className="rounded-xl border border-border bg-secondary/60 px-3.5 py-2 text-xs font-medium text-foreground">
+                  Điểm lo âu GAD-7: {fmtPercent(result.gad7_total)}/21
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+
           <div
             className="mt-4 w-full rounded-xl p-4 text-left text-sm leading-relaxed text-foreground"
             style={{ backgroundColor: `${color}14` }}
@@ -131,9 +147,14 @@ export function ResultView({
             {result.recommendation}
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Mô hình: {result.model_used} · {result.model_reason}
-            {result.n_missing > 0 ? ` · ${result.n_missing} câu bỏ trống` : ""}
+            Mô hình: {result.model_used}
+            {result.model_reason ? ` · ${result.model_reason}` : ""}
           </p>
+          {result.n_missing > 0 ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Bạn đã bỏ qua {result.n_missing} câu. Hệ thống đã ước lượng các giá trị còn thiếu.
+            </p>
+          ) : null}
         </div>
 
         {result.contributions?.length ? (
@@ -144,8 +165,8 @@ export function ResultView({
             </p>
             <ContributionBars items={result.contributions} />
             <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
-              Kết quả đến từ một mô hình học máy huấn luyện trên 27.901 hồ sơ và phản ánh mối liên
-              hệ thống kê, không phải quan hệ nhân quả.
+              Kết quả đến từ một mô hình học máy huấn luyện trên 2.992 sinh viên đại học và phản ánh
+              mối liên hệ thống kê, không phải quan hệ nhân quả.
             </p>
           </div>
         ) : null}
