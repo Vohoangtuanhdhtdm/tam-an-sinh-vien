@@ -36,8 +36,8 @@ function Landing({ onStart }: { onStart: () => void }) {
         Sàng lọc sức khỏe tinh thần
       </h1>
       <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-        Đây là công cụ sàng lọc mang tính tham khảo, sử dụng một mô hình học máy. Bài khảo sát mất
-        khoảng hai phút và câu trả lời của bạn không được lưu lại ở bất kỳ đâu.
+        Đây là công cụ sàng lọc mang tính tham khảo, sử dụng một mô hình học máy. Bài khảo sát gồm
+        31 câu hỏi, mất khoảng 5 phút và câu trả lời của bạn không được lưu lại ở bất kỳ đâu.
       </p>
       <button
         onClick={onStart}

@@ -22,6 +22,7 @@ export interface SchemaField {
 
 export interface SchemaResponse {
   fields: SchemaField[];
+  n_questions?: number;
   disclaimer: string;
 }
 
@@ -39,8 +40,10 @@ export interface PredictResponse {
   risk_level: RiskLevel;
   risk_label: string;
   model_used: string;
-  model_reason: string;
+  model_reason?: string;
   n_missing: number;
+  pss10_total?: number | null;
+  gad7_total?: number | null;
   recommendation: string;
   contributions: Contribution[];
   disclaimer: string;
